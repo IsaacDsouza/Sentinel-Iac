@@ -32,3 +32,7 @@ migration.sql
 
 # Docker
 .scanner-dockers/
+
+# Scan artifacts
+*.sarif
+evals/report.md
