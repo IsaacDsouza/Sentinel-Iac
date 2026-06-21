@@ -1,0 +1,68 @@
+name: "Sentinel IaC Scan"
+description: "Scan Infrastructure-as-Code for security misconfigurations"
+author: "sentinel-iac"
+
+inputs:
+  path:
+    description: "Path to scan"
+    required: false
+    default: "."
+  token:
+    description: "GitHub token for posting PR comments"
+    required: true
+  max-pr-comments:
+    description: "Maximum number of PR comments to post"
+    required: false
+    default: "50"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install sentinel-iac
+      run: pip install sentinel-iac
+      shell: bash
+
+    - name: Run scan
+      run: sentinel scan ${{ inputs.path }} --output sentinel-results.sarif
+      shell: bash
+
+    - name: Upload SARIF
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: sentinel-results.sarif
+        category: sentinel-iac
+
+    - name: Post PR comments
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.token }}
+        script: |
+          const fs = require('fs');
+          const sarif = JSON.parse(fs.readFileSync('sentinel-results.sarif', 'utf8'));
+          const maxComments = parseInt('${{ inputs.max-pr-comments }}');
+          const results = sarif.runs?.[0]?.results || [];
+          let count = 0;
+          for (const finding of results) {
+            if (count >= maxComments) break;
+            const loc = finding.locations?.[0]?.physicalLocation;
+            await github.rest.pulls.createReviewComment({
+              ...context.repo,
+              pull_number: context.issue.number,
+              body: `**${finding.ruleId}** (${finding.level})\n\n${finding.message?.text || ''}`,
+              commit_id: context.sha,
+              path: loc?.artifactLocation?.uri || '',
+              line: loc?.region?.startLine || 1,
+            });
+            count++;
+          }
+          if (results.length > maxComments) {
+            core.warning(`Results truncated: ${results.length} findings, capped at ${maxComments} comments`);
+          }

@@ -1,0 +1,31 @@
+{{- if .Values.frontend.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sentinel-iac.fullname" . }}-frontend
+  labels:
+    app.kubernetes.io/name: {{ include "sentinel-iac.name" . }}-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "sentinel-iac.name" . }}-frontend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "sentinel-iac.name" . }}-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: "nginx:alpine"
+          ports:
+            - containerPort: {{ .Values.frontend.port }}
+          volumeMounts:
+            - name: frontend-dist
+              mountPath: /usr/share/nginx/html
+          resources:
+            {{- toYaml .Values.frontend.resources | nindent 12 }}
+      volumes:
+        - name: frontend-dist
+          emptyDir: {}
+{{- end }}

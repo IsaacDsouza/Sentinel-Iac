@@ -1,0 +1,282 @@
+[
+  {
+    "control_id": "AC-1",
+    "title": "Access Control Policy and Procedures",
+    "description": "The organization develops, documents, and disseminates an access control policy that addresses purpose, scope, roles, responsibilities, management commitment, coordination among organizational entities, and compliance; and procedures to facilitate the implementation of the access control policy and associated access controls.",
+    "framework": "NIST SP 800-53",
+    "family": "Access Control"
+  },
+  {
+    "control_id": "AC-2",
+    "title": "Account Management",
+    "description": "The organization manages information system accounts, including identifying account types, establishing conditions for group membership, requiring authorized approvals, tracking and managing account activations and terminations, and reviewing accounts periodically.",
+    "framework": "NIST SP 800-53",
+    "family": "Access Control"
+  },
+  {
+    "control_id": "AC-3",
+    "title": "Access Enforcement",
+    "description": "The system enforces approved authorizations for logical access to information and system resources in accordance with applicable access control policies.",
+    "framework": "NIST SP 800-53",
+    "family": "Access Control"
+  },
+  {
+    "control_id": "AC-4",
+    "title": "Information Flow Enforcement",
+    "description": "The system enforces approved authorizations for controlling the flow of information within the system and between interconnected systems based on applicable policy.",
+    "framework": "NIST SP 800-53",
+    "family": "Access Control"
+  },
+  {
+    "control_id": "AC-5",
+    "title": "Separation of Duties",
+    "description": "The organization separates duties of individuals as necessary to prevent malevolent activity without collusion, documents separation of duties, and implements separation of duties through assigned access authorizations.",
+    "framework": "NIST SP 800-53",
+    "family": "Access Control"
+  },
+  {
+    "control_id": "AC-6",
+    "title": "Least Privilege",
+    "description": "The organization employs the principle of least privilege, allowing only authorized accesses for users which are necessary to accomplish assigned tasks in accordance with organizational missions and business functions.",
+    "framework": "NIST SP 800-53",
+    "family": "Access Control"
+  },
+  {
+    "control_id": "AC-17",
+    "title": "Remote Access",
+    "description": "The organization establishes and documents usage restrictions, configuration/connection requirements, and implementation guidance for each type of remote access allowed; and authorizes remote access to the system prior to connection.",
+    "framework": "NIST SP 800-53",
+    "family": "Access Control"
+  },
+  {
+    "control_id": "AU-2",
+    "title": "Audit Events",
+    "description": "The organization determines that the system is capable of auditing the events specified; coordinates the audit event selection with entities requiring audit; and provides audit event information to authorized entities.",
+    "framework": "NIST SP 800-53",
+    "family": "Audit and Accountability"
+  },
+  {
+    "control_id": "AU-3",
+    "title": "Content of Audit Records",
+    "description": "The system produces audit records containing information to establish what type of event occurred, when the event occurred, where the event occurred, the source of the event, the outcome of the event, and the identity of any users associated with the event.",
+    "framework": "NIST SP 800-53",
+    "family": "Audit and Accountability"
+  },
+  {
+    "control_id": "AU-6",
+    "title": "Audit Review, Analysis, and Reporting",
+    "description": "The organization reviews and analyzes system audit records to identify inappropriate or unusual activity, and reports findings to appropriate personnel.",
+    "framework": "NIST SP 800-53",
+    "family": "Audit and Accountability"
+  },
+  {
+    "control_id": "AU-12",
+    "title": "Audit Generation",
+    "description": "The system provides audit record generation capability for the events defined and allows authorized personnel to select which events are audited.",
+    "framework": "NIST SP 800-53",
+    "family": "Audit and Accountability"
+  },
+  {
+    "control_id": "CA-2",
+    "title": "Security Assessments",
+    "description": "The organization develops a security assessment plan describing the scope, including the security controls and controls under assessment, assessment procedures to be used, and the assessment environment.",
+    "framework": "NIST SP 800-53",
+    "family": "Security Assessment and Authorization"
+  },
+  {
+    "control_id": "CA-7",
+    "title": "Continuous Monitoring",
+    "description": "The organization develops a continuous monitoring strategy and implements a monitoring program that includes establishing monitoring frequencies and assessing security controls continuously.",
+    "framework": "NIST SP 800-53",
+    "family": "Security Assessment and Authorization"
+  },
+  {
+    "control_id": "CM-2",
+    "title": "Baseline Configuration",
+    "description": "The organization develops, documents, and maintains under configuration control a current baseline configuration of the system.",
+    "framework": "NIST SP 800-53",
+    "family": "Configuration Management"
+  },
+  {
+    "control_id": "CM-3",
+    "title": "Configuration Change Control",
+    "description": "The organization determines the types of changes to the system that are configuration-controlled; reviews proposed changes; approves changes with explicit consideration of security impacts; and documents changes.",
+    "framework": "NIST SP 800-53",
+    "family": "Configuration Management"
+  },
+  {
+    "control_id": "CM-6",
+    "title": "Configuration Settings",
+    "description": "The organization establishes and documents configuration settings for information technology products employed within the system using security configuration checklists; implements the configuration settings; and monitors for unauthorized changes.",
+    "framework": "NIST SP 800-53",
+    "family": "Configuration Management"
+  },
+  {
+    "control_id": "CM-8",
+    "title": "System Component Inventory",
+    "description": "The organization develops and documents an inventory of system components that accurately reflects the current system, and includes all components within the authorization boundary.",
+    "framework": "NIST SP 800-53",
+    "family": "Configuration Management"
+  },
+  {
+    "control_id": "CP-2",
+    "title": "Contingency Plan",
+    "description": "The organization develops a contingency plan for the system that identifies essential missions and functions and associated contingency requirements; provides recovery objectives and priorities; and addresses contingency roles and responsibilities.",
+    "framework": "NIST SP 800-53",
+    "family": "Contingency Planning"
+  },
+  {
+    "control_id": "IA-2",
+    "title": "Identification and Authentication",
+    "description": "The system uniquely identifies and authenticates organizational users or processes acting on behalf of users.",
+    "framework": "NIST SP 800-53",
+    "family": "Identification and Authentication"
+  },
+  {
+    "control_id": "IA-5",
+    "title": "Authenticator Management",
+    "description": "The organization manages system authenticators including verifying identity before establishing authenticators; changing default authenticators; establishing minimum and maximum lifetime restrictions; and changing or refreshing authenticators periodically.",
+    "framework": "NIST SP 800-53",
+    "family": "Identification and Authentication"
+  },
+  {
+    "control_id": "IR-4",
+    "title": "Incident Handling",
+    "description": "The organization implements an incident handling capability for the system that includes preparation, detection and analysis, containment, eradication, and recovery.",
+    "framework": "NIST SP 800-53",
+    "family": "Incident Response"
+  },
+  {
+    "control_id": "IR-5",
+    "title": "Incident Monitoring",
+    "description": "The organization tracks and documents system security incidents.",
+    "framework": "NIST SP 800-53",
+    "family": "Incident Response"
+  },
+  {
+    "control_id": "RA-3",
+    "title": "Risk Assessment",
+    "description": "The organization conducts a risk assessment to identify threats to and vulnerabilities in the system; determines the likelihood and impact of adverse events; and documents risk assessment results.",
+    "framework": "NIST SP 800-53",
+    "family": "Risk Assessment"
+  },
+  {
+    "control_id": "RA-5",
+    "title": "Vulnerability Scanning",
+    "description": "The organization scans for vulnerabilities in the system and hosted applications; employs vulnerability scanning tools that facilitate interoperability and update the tools with new vulnerabilities; and analyzes scan reports.",
+    "framework": "NIST SP 800-53",
+    "family": "Risk Assessment"
+  },
+  {
+    "control_id": "SA-3",
+    "title": "System Development Life Cycle",
+    "description": "The organization manages the system using a system development life cycle that includes information security considerations; defines and documents security roles and responsibilities; and integrates security into the life cycle.",
+    "framework": "NIST SP 800-53",
+    "family": "System and Services Acquisition"
+  },
+  {
+    "control_id": "SC-7",
+    "title": "Boundary Protection",
+    "description": "The system monitors and controls communications at the external boundary of the system and at key internal boundaries within the system; and connects to external networks or systems only through managed interfaces.",
+    "framework": "NIST SP 800-53",
+    "family": "System and Communications Protection"
+  },
+  {
+    "control_id": "SC-8",
+    "title": "Transmission Confidentiality and Integrity",
+    "description": "The system protects the confidentiality and integrity of transmitted information.",
+    "framework": "NIST SP 800-53",
+    "family": "System and Communications Protection"
+  },
+  {
+    "control_id": "SC-12",
+    "title": "Cryptographic Key Establishment and Management",
+    "description": "The organization establishes and manages cryptographic keys for required cryptography employed within the system.",
+    "framework": "NIST SP 800-53",
+    "family": "System and Communications Protection"
+  },
+  {
+    "control_id": "SC-13",
+    "title": "Cryptographic Protection",
+    "description": "The system implements cryptographic mechanisms to prevent unauthorized disclosure of information and detect changes to information during transmission unless otherwise protected by alternative physical measures.",
+    "framework": "NIST SP 800-53",
+    "family": "System and Communications Protection"
+  },
+  {
+    "control_id": "SC-28",
+    "title": "Protection of Information at Rest",
+    "description": "The system protects the confidentiality and integrity of information at rest.",
+    "framework": "NIST SP 800-53",
+    "family": "System and Communications Protection"
+  },
+  {
+    "control_id": "SI-2",
+    "title": "Flaw Remediation",
+    "description": "The organization identifies, reports, and corrects system flaws; tests software updates related to flaw remediation for effectiveness and potential side effects; and installs updates within a time period based on the organization-defined risk.",
+    "framework": "NIST SP 800-53",
+    "family": "System and Information Integrity"
+  },
+  {
+    "control_id": "SI-3",
+    "title": "Malicious Code Protection",
+    "description": "The organization employs malicious code protection mechanisms at system entry and exit points to detect and eradicate malicious code; updates the mechanisms as new releases become available; and configures the mechanisms for periodic scanning.",
+    "framework": "NIST SP 800-53",
+    "family": "System and Information Integrity"
+  },
+  {
+    "control_id": "SI-4",
+    "title": "System Monitoring",
+    "description": "The organization monitors the system to detect attacks and indicators of potential attacks; identifies unauthorized use; and monitors inbound and outbound communications traffic for patterns of anomalous activity.",
+    "framework": "NIST SP 800-53",
+    "family": "System and Information Integrity"
+  },
+  {
+    "control_id": "SI-7",
+    "title": "Software, Firmware, and Information Integrity",
+    "description": "The organization employs integrity verification tools to detect unauthorized changes to software, firmware, and information.",
+    "framework": "NIST SP 800-53",
+    "family": "System and Information Integrity"
+  },
+  {
+    "control_id": "SI-12",
+    "title": "Information Management and Retention",
+    "description": "The organization manages and retains information within the system and information output from the system in accordance with applicable laws, executive orders, directives, policies, regulations, standards, and operational requirements.",
+    "framework": "NIST SP 800-53",
+    "family": "System and Information Integrity"
+  },
+  {
+    "control_id": "PE-2",
+    "title": "Physical Access Authorizations",
+    "description": "The organization develops and keeps current a list of personnel with authorized access to the facility where the system resides; issues authorization credentials; and controls physical access to the facility.",
+    "framework": "NIST SP 800-53",
+    "family": "Physical and Environmental Protection"
+  },
+  {
+    "control_id": "MP-2",
+    "title": "Media Access",
+    "description": "The organization restricts access to system media to authorized personnel.",
+    "framework": "NIST SP 800-53",
+    "family": "Media Protection"
+  },
+  {
+    "control_id": "AT-2",
+    "title": "Security Awareness Training",
+    "description": "The organization provides basic security awareness training to all system users as part of initial training and refresher training when required.",
+    "framework": "NIST SP 800-53",
+    "family": "Awareness and Training"
+  },
+  {
+    "control_id": "PL-4",
+    "title": "Rules of Behavior",
+    "description": "The organization establishes and makes readily available to all system users the rules that describe their responsibilities and expected behavior with regard to information and system usage.",
+    "framework": "NIST SP 800-53",
+    "family": "Planning"
+  },
+  {
+    "control_id": "PS-2",
+    "title": "Position Risk Designation",
+    "description": "The organization assigns a risk designation to all positions; establishes screening criteria for individuals filling those positions; and reviews and updates position risk designations.",
+    "framework": "NIST SP 800-53",
+    "family": "Personnel Security"
+  }
+]

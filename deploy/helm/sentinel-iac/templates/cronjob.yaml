@@ -1,0 +1,26 @@
+{{- if .Values.cli.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "sentinel-iac.fullname" . }}-scan
+  labels:
+    app.kubernetes.io/name: {{ include "sentinel-iac.name" . }}-scan
+spec:
+  schedule: "{{ .Values.cli.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: {{ include "sentinel-iac.fullname" . }}
+          containers:
+            - name: scan
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command: ["sentinel", "scan", "/workspace"]
+              envFrom:
+                - secretRef:
+                    name: {{ include "sentinel-iac.fullname" . }}-config
+              resources:
+                {{- toYaml .Values.cli.resources | nindent 16 }}
+          restartPolicy: OnFailure
+{{- end }}

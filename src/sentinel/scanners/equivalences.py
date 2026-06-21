@@ -1,0 +1,61 @@
+EQUIVALENCES: dict[str, set[str]] = {
+    "CKV_AWS_18": {"AVD-AWS-0089", "AC_AWS_0453"},
+    "CKV_AWS_20": {"AVD-AWS-0091"},
+    "CKV_AWS_21": {"AVD-AWS-0092"},
+    "CKV_AWS_23": {"AVD-AWS-0093"},
+    "CKV_AWS_24": {"AVD-AWS-0094"},
+    "CKV_AWS_25": {"AVD-AWS-0095"},
+    "CKV_AWS_52": {"AVD-AWS-0105"},
+    "CKV_AWS_53": {"AVD-AWS-0106"},
+    "CKV_AWS_54": {"AVD-AWS-0107"},
+    "CKV_AWS_55": {"AVD-AWS-0108"},
+    "CKV_AWS_56": {"AVD-AWS-0109"},
+    "CKV_AWS_57": {"AVD-AWS-0110"},
+    "CKV_AWS_58": {"AVD-AWS-0111"},
+    "CKV_AWS_59": {"AVD-AWS-0112"},
+    "CKV_AWS_60": {"AVD-AWS-0113"},
+    "CKV_AWS_61": {"AVD-AWS-0114"},
+    "CKV_AWS_88": {"AVD-AWS-0121"},
+    "CKV_AWS_89": {"AVD-AWS-0122"},
+    "CKV_AWS_90": {"AVD-AWS-0123"},
+    "CKV_AWS_91": {"AVD-AWS-0124"},
+    "CKV_AWS_92": {"AVD-AWS-0125"},
+    "CKV_AWS_93": {"AVD-AWS-0126"},
+    "CKV_AWS_94": {"AVD-AWS-0127"},
+    "CKV_AWS_95": {"AVD-AWS-0128"},
+    "CKV_AWS_96": {"AVD-AWS-0129"},
+    "CKV_AWS_97": {"AVD-AWS-0130"},
+    "CKV_AWS_98": {"AVD-AWS-0131"},
+    "CKV_AWS_99": {"AVD-AWS-0132"},
+    "CKV_AWS_100": {"AVD-AWS-0133"},
+    "CKV_AWS_101": {"AVD-AWS-0134"},
+    "CKV_AWS_102": {"AVD-AWS-0135"},
+    "CKV_AWS_103": {"AVD-AWS-0136"},
+    "CKV_AWS_104": {"AVD-AWS-0137"},
+    "CKV_AWS_105": {"AVD-AWS-0138"},
+    "CKV_AWS_106": {"AVD-AWS-0139"},
+    "CKV_AWS_107": {"AVD-AWS-0140"},
+    "CKV_AWS_108": {"AVD-AWS-0141"},
+    "CKV_AWS_109": {"AVD-AWS-0142"},
+    "CKV_AWS_110": {"AVD-AWS-0143"},
+    "CKV_AWS_111": {"AVD-AWS-0144"},
+    "CKV_AWS_112": {"AVD-AWS-0145"},
+    "CKV_AWS_113": {"AVD-AWS-0146"},
+    "CKV_AWS_114": {"AVD-AWS-0147"},
+    "CKV_AWS_115": {"AVD-AWS-0148"},
+    "CKV_AWS_116": {"AVD-AWS-0149"},
+    "CKV_AWS_117": {"AVD-AWS-0150"},
+    "CKV_AWS_118": {"AVD-AWS-0151"},
+    "CKV_AWS_119": {"AVD-AWS-0152"},
+    "CKV_AWS_120": {"AVD-AWS-0153"},
+    "CKV_AWS_121": {"AVD-AWS-0154"},
+}
+
+
+def find_equivalent(rule_id: str) -> set[str]:
+    result = EQUIVALENCES.get(rule_id, set())
+    for key, values in EQUIVALENCES.items():
+        if rule_id in values:
+            result.add(key)
+            result.update(values - {rule_id})
+    return result

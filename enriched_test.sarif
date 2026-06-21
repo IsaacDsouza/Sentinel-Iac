@@ -1,0 +1,36 @@
+{
+  "sentinel_id": "cd906918c653f4b7",
+  "ruleId": "CKV_AWS_53",
+  "source_engine": "checkov",
+  "level": "high",
+  "resource": "unknown",
+  "message": {
+    "text": "Ensure S3 bucket has block public ACLS enabled"
+  },
+  "raw_description": "Ensure S3 bucket has block public ACLS enabled",
+  "locations": [
+    {
+      "physicalLocation": {
+        "artifactLocation": {
+          "uri": "scan/main.tf"
+        },
+        "region": {
+          "startLine": 10
+        }
+      }
+    }
+  ],
+  "enrichment": {
+    "explanation": "An attacker could upload malicious objects to an S3 bucket if public ACLs are not blocked, allowing them to execute arbitrary code or steal sensitive data. To prevent this, ensure that the S3 bucket has block public ACLs enabled.",
+    "compliance_controls": [
+      {
+        "control_id": "AC-3",
+        "framework": "NIST SP 800-53",
+        "relevance_score": 0.95,
+        "citation": "This finding relates to access enforcement, specifically ensuring that public access to S3 buckets is blocked, aligning with the control's objective of controlling access to organizational information systems."
+      }
+    ],
+    "priority_score": 90,
+    "priority_rationale": "The S3 bucket is publicly accessible, which means it has a high potential for data exposure and unauthorized access. Although the exact resource is unknown, the severity of the issue is high, indicating a significant risk. The lack of information about the resource's permissions and data sensitivity makes it difficult to assess the full impact, but the public exposure and potential for data compromise justify a high priority score."
+  }
+}

@@ -1,0 +1,77 @@
+# Default values for sentinel-iac.
+# This is a YAML-formatted file.
+
+replicaCount: 1
+
+image:
+  repository: sentinel-iac
+  tag: latest
+  pullPolicy: IfNotPresent
+
+api:
+  enabled: true
+  port: 8000
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "1"
+
+cli:
+  enabled: true
+  # CLI runs as a CronJob for scheduled scans
+  schedule: "0 6 * * *"  # daily at 6am
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "2"
+
+frontend:
+  enabled: true
+  port: 80
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+
+postgresql:
+  enabled: true
+  image: pgvector/pgvector:pg16
+  auth:
+    username: sentinel
+    password: sentinel
+    database: sentinel
+  port: 5432
+  persistence:
+    size: 10Gi
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "1"
+
+config:
+  apiKey: ""
+  llmProvider: "openai"
+  openaiApiKey: ""
+  openaiBaseUrl: "https://integrate.api.nvidia.com/v1"
+  openaiModel: "meta/llama-3.3-70b-instruct"
+  databaseUrl: "postgresql+asyncpg://sentinel:sentinel@sentinel-iac-postgresql:5432/sentinel"
+  logLevel: "INFO"
+  embeddingModel: "all-MiniLM-L6-v2"
+
+ingress:
+  enabled: false
+  host: sentinel.example.com
+  annotations: {}
+  tls: []

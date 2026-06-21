@@ -1,0 +1,14 @@
+apiVersion: v2
+name: sentinel-iac
+description: AI-Augmented IaC Misconfiguration Scanner & Auto-Remediator
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - security
+  - iac
+  - scanning
+  - remediation
+home: https://github.com/your-org/sentinel-iac
+sources:
+  - https://github.com/your-org/sentinel-iac

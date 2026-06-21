@@ -1,0 +1,113 @@
+fixtures:
+  - name: terragoat
+    path: evals/fixtures/terragoat
+    expected:
+      - rule_id: CKV_AWS_18
+        engine: checkov
+        severity: high
+        resource: aws_s3_bucket.public_bucket
+        file: main.tf
+      - rule_id: CKV_AWS_20
+        engine: checkov
+        severity: high
+        resource: aws_s3_bucket.public_bucket
+        file: main.tf
+      - rule_id: CKV_AWS_24
+        engine: checkov
+        severity: high
+        resource: aws_security_group.wide_open
+        file: main.tf
+      - rule_id: CKV_AWS_53
+        engine: checkov
+        severity: medium
+        resource: aws_s3_bucket_public_access_block.disabled
+        file: main.tf
+      - rule_id: CKV_AWS_25
+        engine: checkov
+        severity: medium
+        resource: aws_security_group.wide_open
+        file: main.tf
+      - rule_id: AWS-0086
+        engine: trivy
+        severity: high
+        resource: arn:aws:s3:::my-public-bucket
+        file: main.tf
+
+  - name: k8s-goat
+    path: evals/fixtures/k8s-goat
+    expected:
+      - rule_id: CKV_K8S_16
+        engine: checkov
+        severity: high
+        resource: Pod/insecure-pod
+        file: pod.yaml
+      - rule_id: CKV_K8S_14
+        engine: checkov
+        severity: high
+        resource: Pod/insecure-pod
+        file: pod.yaml
+      - rule_id: CKV_K8S_21
+        engine: checkov
+        severity: high
+        resource: Pod/insecure-pod
+        file: pod.yaml
+      - rule_id: CKV_K8S_17
+        engine: checkov
+        severity: high
+        resource: Pod/insecure-pod
+        file: pod.yaml
+      - rule_id: CKV_K8S_8
+        engine: checkov
+        severity: medium
+        resource: Pod/insecure-pod
+        file: pod.yaml
+      - rule_id: KSV-0009
+        engine: trivy
+        severity: high
+        resource: Pod/insecure-pod
+        file: pod.yaml
+      - rule_id: KSV-0010
+        engine: trivy
+        severity: high
+        resource: Pod/insecure-pod
+        file: pod.yaml
+
+  - name: docker-goat
+    path: evals/fixtures/docker-goat
+    expected:
+      - rule_id: CKV_DOCKER_7
+        engine: checkov
+        severity: high
+        file: Dockerfile
+      - rule_id: CKV_DOCKER_8
+        engine: checkov
+        severity: high
+        file: Dockerfile
+      - rule_id: CKV_DOCKER_2
+        engine: checkov
+        severity: high
+        file: Dockerfile
+      - rule_id: DS-0002
+        engine: trivy
+        severity: high
+        file: Dockerfile
+      - rule_id: DS-0029
+        engine: trivy
+        severity: high
+        file: Dockerfile
+      - rule_id: DL3007
+        engine: hadolint
+        severity: medium
+        file: Dockerfile
+      - rule_id: DL3002
+        engine: hadolint
+        severity: medium
+        file: Dockerfile
+      - rule_id: DL3008
+        engine: hadolint
+        severity: medium
+        file: Dockerfile
+
+thresholds:
+  min_recall: 0.5
+  min_remediation_rate: 0.3
