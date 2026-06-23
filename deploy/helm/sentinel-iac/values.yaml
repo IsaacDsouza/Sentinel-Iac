@@ -11,6 +11,14 @@ image:
 api:
   enabled: true
   port: 8000
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
   resources:
     requests:
       memory: "256Mi"
@@ -34,6 +42,10 @@ cli:
 frontend:
   enabled: true
   port: 80
+  image:
+    repository: sentinel-iac-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
   resources:
     requests:
       memory: "64Mi"
@@ -68,6 +80,9 @@ config:
   databaseUrl: "postgresql+asyncpg://sentinel:sentinel@sentinel-iac-postgresql:5432/sentinel"
   logLevel: "INFO"
   embeddingModel: "all-MiniLM-L6-v2"
+
+networkPolicy:
+  enabled: false
 
 ingress:
   enabled: false

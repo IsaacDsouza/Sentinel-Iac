@@ -23,9 +23,23 @@ spec:
           command: ["uvicorn", "sentinel.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
           ports:
             - containerPort: {{ .Values.api.port }}
+              name: http
           envFrom:
             - secretRef:
                 name: {{ include "sentinel-iac.fullname" . }}-config
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.api.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.api.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 15
           resources:
             {{- toYaml .Values.api.resources | nindent 12 }}
+      terminationGracePeriodSeconds: 30
 {{- end }}

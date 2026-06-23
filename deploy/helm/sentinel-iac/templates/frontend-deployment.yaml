@@ -17,15 +17,24 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: "nginx:alpine"
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.frontend.port }}
-          volumeMounts:
-            - name: frontend-dist
-              mountPath: /usr/share/nginx/html
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.frontend.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.frontend.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 15
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}
-      volumes:
-        - name: frontend-dist
-          emptyDir: {}
+      terminationGracePeriodSeconds: 30
 {{- end }}

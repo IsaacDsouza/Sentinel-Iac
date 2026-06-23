@@ -11,9 +11,13 @@ inputs:
     description: "GitHub token for posting PR comments"
     required: true
   max-pr-comments:
-    description: "Maximum number of PR comments to post"
+    description: "Maximum number of PR comments to post (GitHub max: 255)"
     required: false
     default: "50"
+  enrich:
+    description: "Run LLM enrichment (requires OPENAI_API_KEY env var)"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -27,12 +31,28 @@ runs:
         python-version: "3.12"
 
     - name: Install sentinel-iac
-      run: pip install sentinel-iac
+      run: pip install ${{ github.action_path }}/../.
       shell: bash
+
+    - name: Pull scanner Docker images
+      run: |
+        docker pull bridgecrew/checkov:latest
+        docker pull aquasec/trivy:latest
+        docker pull zegl/kube-score:latest
+        docker pull hadolint/hadolint:latest
+      shell: bash
+      continue-on-error: true
 
     - name: Run scan
       run: sentinel scan ${{ inputs.path }} --output sentinel-results.sarif
       shell: bash
+
+    - name: Run enrichment
+      if: inputs.enrich == 'true' && env.OPENAI_API_KEY != ''
+      run: sentinel scan ${{ inputs.path }} --enrich --output sentinel-enriched.sarif
+      shell: bash
+      env:
+        OPENAI_API_KEY: ${{ env.OPENAI_API_KEY }}
 
     - name: Upload SARIF
       uses: github/codeql-action/upload-sarif@v3
@@ -49,20 +69,37 @@ runs:
           const sarif = JSON.parse(fs.readFileSync('sentinel-results.sarif', 'utf8'));
           const maxComments = parseInt('${{ inputs.max-pr-comments }}');
           const results = sarif.runs?.[0]?.results || [];
+
+          if (!context.issue.number) {
+            console.log('Not a PR — skipping comments');
+            return;
+          }
+
           let count = 0;
           for (const finding of results) {
             if (count >= maxComments) break;
             const loc = finding.locations?.[0]?.physicalLocation;
+            const uri = loc?.artifactLocation?.uri;
+            const line = loc?.region?.startLine || 1;
+            const msg = finding.message?.text || '';
+            const ruleId = finding.ruleId || 'unknown';
+            const level = finding.level || 'warning';
+
             await github.rest.pulls.createReviewComment({
               ...context.repo,
               pull_number: context.issue.number,
-              body: `**${finding.ruleId}** (${finding.level})\n\n${finding.message?.text || ''}`,
+              body: `**${ruleId}** (${level})\n\n${msg}`,
               commit_id: context.sha,
-              path: loc?.artifactLocation?.uri || '',
-              line: loc?.region?.startLine || 1,
+              path: uri,
+              line: line,
             });
             count++;
           }
+
           if (results.length > maxComments) {
-            core.warning(`Results truncated: ${results.length} findings, capped at ${maxComments} comments`);
+            core.warning(
+              `Results truncated: ${results.length} findings ` +
+              `capped at ${maxComments} comments. ` +
+              `Full results in Security > Code scanning.`
+            );
           }

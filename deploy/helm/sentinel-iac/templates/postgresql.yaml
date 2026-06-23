@@ -20,6 +20,7 @@ spec:
           image: {{ .Values.postgresql.image }}
           ports:
             - containerPort: {{ .Values.postgresql.port }}
+              name: postgres
           env:
             - name: POSTGRES_USER
               value: {{ .Values.postgresql.auth.username }}
@@ -27,6 +28,16 @@ spec:
               value: {{ .Values.postgresql.auth.password }}
             - name: POSTGRES_DB
               value: {{ .Values.postgresql.auth.database }}
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", {{ .Values.postgresql.auth.username | quote }}]
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", {{ .Values.postgresql.auth.username | quote }}]
+            initialDelaySeconds: 10
+            periodSeconds: 10
           resources:
             {{- toYaml .Values.postgresql.resources | nindent 12 }}
           {{- if .Values.postgresql.persistence.enabled }}
@@ -37,5 +48,5 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "sentinel-iac.fullname" . }}-postgresql
-{{- end }}
+      {{- end }}
 {{- end }}
