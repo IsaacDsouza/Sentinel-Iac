@@ -96,7 +96,7 @@ async def test_enrichment_no_api_key() -> None:
     from sentinel.config import get_config
 
     cfg = get_config()
-    cfg.anthropic_api_key = ""
+    cfg.openai_api_key = ""
 
     findings = [
         Finding(

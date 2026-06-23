@@ -24,8 +24,7 @@ def test_scan_nonexistent_path() -> None:
 
 
 def test_fix_needs_api_key(monkeypatch) -> None:
-    monkeypatch.setenv("ANTHROPIC_API_KEY", "")
-    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("OPENAI_API_KEY", "")
     result = runner.invoke(app, ["fix"])
     assert result.exit_code == 1
-    assert "ANTHROPIC_API_KEY" in result.stdout
+    assert "OPENAI_API_KEY" in result.stdout

@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import httpx
 import structlog
 
 from sentinel.config import get_config
@@ -111,132 +112,6 @@ _TOOLS = [
     },
 ]
 
-_ANTHROPIC_TOOLS = [
-    {
-        "name": "read_file",
-        "description": "Read a file from the target directory",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "file_path": {
-                    "type": "string",
-                    "description": "Path relative to scan target",
-                }
-            },
-            "required": ["file_path"],
-        },
-    },
-    {
-        "name": "propose_patch",
-        "description": "Propose a fix for a finding by providing the complete new file content",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "description": "The COMPLETE new content of the file",
-                },
-                "file_path": {
-                    "type": "string",
-                    "description": "The file being patched",
-                },
-                "explanation": {
-                    "type": "string",
-                    "description": "Explanation of what the patch does",
-                },
-            },
-            "required": ["content", "file_path", "explanation"],
-        },
-    },
-]
-
-
-def _call_anthropic_tools(
-    messages: list[dict[str, Any]],
-    system: str,
-) -> dict[str, Any] | None:
-    from anthropic import Anthropic
-
-    api_key = get_config().anthropic_api_key
-    if not api_key:
-        logger.warning("ANTHROPIC_API_KEY not set")
-        return None
-
-    client = Anthropic(api_key=api_key)
-    try:
-        resp = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=12288,
-            temperature=0.1,
-            system=system,
-            messages=messages,  # type: ignore[arg-type]
-            tools=_ANTHROPIC_TOOLS,  # type: ignore[arg-type]
-        )
-        result: dict[str, Any] = {"content": resp.content}
-        return result
-    except Exception as e:
-        logger.error("anthropic_tool_call_failed", error=str(e))
-        return None
-
-
-def _call_hf_tools(
-    messages: list[dict[str, Any]],
-    system: str,
-) -> dict[str, Any] | None:
-    from huggingface_hub import InferenceClient
-
-    cfg = get_config()
-    api_key = cfg.huggingface_api_key
-    if not api_key:
-        logger.warning("HUGGINGFACE_API_KEY not set")
-        return None
-
-    model = cfg.huggingface_model
-    client = InferenceClient(token=api_key)
-
-    hf_messages: list[dict[str, str]] = []
-    hf_messages.append({"role": "system", "content": system})
-    for m in messages:
-        role = str(m.get("role", "user"))
-        content = m.get("content", "")
-        if isinstance(content, list):
-            content = " ".join(str(c) for c in content)
-        hf_messages.append({"role": role, "content": str(content)})
-
-    try:
-        result = client.chat_completion(
-            model=model,
-            messages=hf_messages,
-            tools=_TOOLS,  # type: ignore[arg-type]
-            max_tokens=12288,
-            temperature=0.1,
-        )
-        if result is None:
-            return None
-        tool_calls = []
-        if result.choices:
-            msg = result.choices[0].message
-            if msg.tool_calls:
-                for tc in msg.tool_calls:
-                    tool_calls.append({
-                        "function": {
-                            "name": tc.function.name,
-                            "arguments": tc.function.arguments,
-                        }
-                    })
-        return {
-            "choices": [
-                {
-                    "message": {
-                        "tool_calls": tool_calls,
-                    }
-                }
-            ]
-        }
-    except Exception as e:
-        logger.error("hf_tool_call_failed", model=model, error=str(e))
-        return None
-
 
 def _extract_tool_call(response: dict[str, Any] | None) -> tuple[str, dict[str, object]] | None:
     if response is None:
@@ -264,17 +139,10 @@ def _call_openai_tools(
     messages: list[dict[str, Any]],
     system: str,
 ) -> dict[str, Any] | None:
-    import httpx
-
     cfg = get_config()
     api_key = cfg.openai_api_key
     base_url = cfg.openai_base_url
     model = cfg.openai_model or "gpt-3.5-turbo"
-
-    if cfg.llm_provider == "freeinference":
-        api_key = api_key or "noop"
-        base_url = "https://freeinference.org/v1"
-        model = model or "glm-4.7"
 
     if not api_key or not base_url:
         logger.warning("OPENAI_API_KEY or OPENAI_BASE_URL not set")
@@ -430,12 +298,7 @@ def remediate_finding(
             iteration=iteration + 1,
         )
 
-        if config.llm_provider == "huggingface":
-            resp = _call_hf_tools(messages, REMEDIATION_SYSTEM_PROMPT)
-        elif config.llm_provider in ("openai", "freeinference"):
-            resp = _call_openai_tools(messages, REMEDIATION_SYSTEM_PROMPT)
-        else:
-            resp = _call_anthropic_tools(messages, REMEDIATION_SYSTEM_PROMPT)
+        resp = _call_openai_tools(messages, REMEDIATION_SYSTEM_PROMPT)
 
         if resp is None:
             return RemediationResult(
@@ -445,45 +308,28 @@ def remediate_finding(
                 iterations=iteration + 1,
             )
 
-        openai_like = ("huggingface", "openai", "freeinference")
-        tool_call = _extract_tool_call(resp) if config.llm_provider in openai_like else None
+        tool_call = _extract_tool_call(resp)
 
-        if config.llm_provider in openai_like:
-            if tool_call is None:
-                g = _get_fix_guidance(finding.rule_id)
-                patch = _fallback_text_patch(finding_context, iac_content, g)
-                if patch is None:
-                    return RemediationResult(
-                        finding=finding,
-                        validated=False,
-                        validation_log="No patch proposed by model",
-                        iterations=iteration + 1,
-                    )
-                tool_name = "propose_patch"
-                ti = cast_ti(patch)
-            else:
-                tool_name, ti = tool_call
-                if tool_name == "propose_patch" and not ti.get("content"):
-                    g = _get_fix_guidance(finding.rule_id)
-                    fallback = _fallback_text_patch(finding_context, iac_content, g)
-                    if fallback:
-                        tool_name = "propose_patch"
-                        ti = cast_ti(fallback)
-        else:
-            tool_use = None
-            for block in resp.get("content", []):
-                if hasattr(block, "type") and block.type == "tool_use":
-                    tool_use = block
-                    break
-            if tool_use is None:
+        if tool_call is None:
+            g = _get_fix_guidance(finding.rule_id)
+            patch = _fallback_text_patch(finding_context, iac_content, g)
+            if patch is None:
                 return RemediationResult(
                     finding=finding,
                     validated=False,
                     validation_log="No patch proposed by model",
                     iterations=iteration + 1,
                 )
-            tool_name = str(tool_use.name)
-            ti = tool_use.input if hasattr(tool_use, "input") else {}
+            tool_name = "propose_patch"
+            ti = cast_ti(patch)
+        else:
+            tool_name, ti = tool_call
+            if tool_name == "propose_patch" and not ti.get("content"):
+                g = _get_fix_guidance(finding.rule_id)
+                fallback = _fallback_text_patch(finding_context, iac_content, g)
+                if fallback:
+                    tool_name = "propose_patch"
+                    ti = cast_ti(fallback)
 
         if tool_name == "read_file":
             file_path = str(ti.get("file_path", str(finding.file_path)))
@@ -525,15 +371,6 @@ def remediate_finding(
             else:
                 patched = None
 
-            logger.debug(
-                "proposed_patch",
-                finding_id=finding.id,
-                file_path=patch_file_path,
-                has_content=bool(full_content),
-                has_diff=bool(diff),
-                patched_is_none=patched is None,
-                patched_len=len(patched) if patched else 0,
-            )
             if full_content:
                 logger.info(
                     "patch_via_full_content",

@@ -8,9 +8,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    anthropic_api_key: str = ""
     embedding_model: str = "all-MiniLM-L6-v2"
-    embedding_api_key: str = ""
     database_url: str = "postgresql+asyncpg://sentinel:sentinel@localhost:5432/sentinel"
     log_level: str = "INFO"
     api_key: str = ""
@@ -18,9 +16,6 @@ class Settings(BaseSettings):
     remediation_max_iterations: int = 5
     remediation_max_tokens_per_run: int = 100_000
 
-    llm_provider: str = "anthropic"
-    huggingface_api_key: str = ""
-    huggingface_model: str = "Qwen/Qwen2.5-7B-Instruct"
     openai_api_key: str = ""
     openai_base_url: str = ""
     openai_model: str = ""

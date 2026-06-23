@@ -1,20 +1,12 @@
+import time
 from typing import Any
 
+import httpx
 import structlog
 
 from sentinel.config import get_config
 
 logger = structlog.get_logger(__name__)
-
-
-def _get_hf_client() -> Any | None:
-    from huggingface_hub import InferenceClient
-
-    cfg = get_config()
-    api_key = cfg.huggingface_api_key
-    if not api_key:
-        return None
-    return InferenceClient(token=api_key)
 
 IAC_CONTENT_DELIMITER_START = "<|untrusted_iac_file|>"
 IAC_CONTENT_DELIMITER_END = "</|untrusted_iac_file|>"
@@ -95,108 +87,7 @@ def wrap_iac_content(content: str) -> str:
     return f"{IAC_CONTENT_DELIMITER_START}\n{content}\n{IAC_CONTENT_DELIMITER_END}"
 
 
-def _call_anthropic(prompt: str, system: str | None = None, max_tokens: int = 1024) -> str | None:
-    from anthropic import Anthropic
-
-    api_key = get_config().anthropic_api_key
-    if not api_key:
-        logger.warning("ANTHROPIC_API_KEY not set")
-        return None
-
-    client = Anthropic(api_key=api_key)
-    try:
-        resp = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=max_tokens,
-            temperature=0.1,
-            system=system or SYSTEM_PROMPT_BASE,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        if resp.content:
-            block = resp.content[0]
-            if hasattr(block, "text"):
-                return block.text
-        return None
-    except Exception as e:
-        logger.error("anthropic_call_failed", error=str(e))
-        return None
-
-
-def _call_huggingface(prompt: str, system: str | None = None, max_tokens: int = 1024) -> str | None:
-    cfg = get_config()
-    model = cfg.huggingface_model
-    client = _get_hf_client()
-    if client is None:
-        return None
-
-    messages: list[dict[str, str]] = []
-    if system:
-        messages.append({"role": "system", "content": system})
-    messages.append({"role": "user", "content": prompt})
-
-    try:
-        result = client.chat_completion(
-            model=model,
-            messages=messages,
-            max_tokens=max_tokens,
-            temperature=0.1,
-        )
-        if result and result.choices:
-            content = result.choices[0].message.content
-            if content:
-                return str(content)
-        return None
-    except Exception as e:
-        logger.error("huggingface_call_failed", model=model, error=str(e))
-        return None
-
-
-def _call_huggingface_sync(
-    prompt: str, system: str | None = None, max_tokens: int = 1024
-) -> str | None:
-    import httpx
-
-    cfg = get_config()
-    model = cfg.huggingface_model
-    api_key = cfg.huggingface_api_key
-    if not api_key:
-        return None
-
-    messages: list[dict[str, str]] = []
-    if system:
-        messages.append({"role": "system", "content": system})
-    messages.append({"role": "user", "content": prompt})
-
-    payload: dict[str, Any] = {
-        "model": model,
-        "messages": messages,
-        "max_tokens": max_tokens,
-        "temperature": 0.1,
-    }
-
-    try:
-        with httpx.Client(timeout=120) as http:
-            resp = http.post(
-                "https://huggingface.co/api/inference/v1/chat/completions",
-                headers={"Authorization": f"Bearer {api_key}"},
-                json=payload,
-            )
-            resp.raise_for_status()
-            data = resp.json()
-            choices = data.get("choices", [])
-            if choices:
-                return str(choices[0].get("message", {}).get("content", ""))
-            return None
-    except Exception as e:
-        logger.error("huggingface_call_failed", model=model, error=str(e))
-        return None
-
-
 def _call_openai(prompt: str, system: str | None = None, max_tokens: int = 1024) -> str | None:
-    import time
-
-    import httpx
-
     cfg = get_config()
     api_key = cfg.openai_api_key
     base_url = cfg.openai_base_url
@@ -252,35 +143,4 @@ def _call_openai(prompt: str, system: str | None = None, max_tokens: int = 1024)
 
 
 def call_llm(prompt: str, system: str | None = None, max_tokens: int = 1024) -> str | None:
-    cfg = get_config()
-    provider = cfg.llm_provider
-
-    if provider == "openai":
-        return _call_openai(prompt, system, max_tokens)
-    if provider == "freeinference":
-        cfg.openai_api_key = cfg.openai_api_key or "noop"
-        cfg.openai_base_url = "https://freeinference.org/v1"
-        cfg.openai_model = cfg.openai_model or "glm-4.7"
-        return _call_openai(prompt, system, max_tokens)
-    if provider == "huggingface":
-        result = _call_huggingface(prompt, system, max_tokens)
-        if result is not None:
-            return result
-        result = _call_huggingface_sync(prompt, system, max_tokens)
-        if result is not None:
-            logger.info("huggingface_fallback_used", model=cfg.huggingface_model)
-            return result
-        return None
-    return _call_anthropic(prompt, system, max_tokens)
-
-
-def get_client() -> object:
-    cfg = get_config()
-    if cfg.llm_provider == "huggingface":
-        if cfg.huggingface_api_key:
-            return object()
-        return None
-    if cfg.anthropic_api_key:
-        from anthropic import Anthropic
-        return Anthropic(api_key=cfg.anthropic_api_key)
-    return None
+    return _call_openai(prompt, system, max_tokens)

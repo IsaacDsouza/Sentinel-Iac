@@ -221,16 +221,8 @@ def fix(
     from sentinel.enrich.converter import sarif_result_to_finding
 
     cfg = get_config()
-    if cfg.llm_provider == "huggingface":
-        if not cfg.huggingface_api_key:
-            console.print("[red]Error: HUGGINGFACE_API_KEY is required for remediation[/red]")
-            raise typer.Exit(code=1)
-    elif cfg.llm_provider in ("openai", "freeinference"):
-        if not cfg.openai_api_key:
-            console.print("[red]Error: OPENAI_API_KEY is required for remediation[/red]")
-            raise typer.Exit(code=1)
-    elif not cfg.anthropic_api_key:
-        console.print("[red]Error: ANTHROPIC_API_KEY is required for remediation[/red]")
+    if not cfg.openai_api_key:
+        console.print("[red]Error: OPENAI_API_KEY is required for remediation[/red]")
         raise typer.Exit(code=1)
 
     logger.info("fix_started", path=str(target_path), write=write)
