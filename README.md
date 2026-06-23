@@ -128,16 +128,11 @@ All API endpoints require the `X-API-Key` header when `API_KEY` is configured.
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `DATABASE_URL` | `postgresql+asyncpg://sentinel:sentinel@localhost:5432/sentinel` | PostgreSQL connection string (must support pgvector) |
-| `LLM_PROVIDER` | `anthropic` | LLM provider: `anthropic`, `openai`, `huggingface`, or `freeinference` |
-| `ANTHROPIC_API_KEY` | — | Anthropic API key (used when provider is `anthropic`) |
-| `OPENAI_API_KEY` | — | OpenAI-compatible API key |
+| `OPENAI_API_KEY` | — | OpenAI-compatible API key (required for LLM features) |
 | `OPENAI_BASE_URL` | — | Custom API endpoint (e.g. `https://integrate.api.nvidia.com/v1` for NVIDIA NIM) |
-| `OPENAI_MODEL` | `gpt-3.5-turbo` | Model name for OpenAI-compatible endpoints |
-| `HUGGINGFACE_API_KEY` | — | HuggingFace API key |
-| `HUGGINGFACE_MODEL` | `Qwen/Qwen2.5-7B-Instruct` | HuggingFace model ID |
+| `OPENAI_MODEL` | `meta/llama-3.3-70b-instruct` | Model name for OpenAI-compatible endpoints |
 | `API_KEY` | — | API authentication key (empty = no auth) |
 | `EMBEDDING_MODEL` | `all-MiniLM-L6-v2` | Sentence transformer for compliance embeddings |
-| `EMBEDDING_API_KEY` | — | API key for embedding provider if required |
 | `ENRICHMENT_BATCH_TOKEN_BUDGET` | `40000` | Max tokens per enrichment batch |
 | `REMEDIATION_MAX_ITERATIONS` | `5` | Max retry attempts for fix validation |
 | `REMEDIATION_MAX_TOKENS_PER_RUN` | `100000` | Token budget per remediation run |
@@ -273,14 +268,15 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full development guide.
 | CloudFormation | `.json`, `.yaml` | Checkov, Trivy |
 | ARM / Bicep | `.json` | Checkov, Trivy |
 
-## LLM Providers
+## LLM Provider
 
-| Provider | Config Value | Backend |
-|----------|-------------|---------|
-| Anthropic Claude | `anthropic` | Anthropic SDK (claude-sonnet-4-20250514) |
-| OpenAI / Compatible | `openai` | OpenAI-compatible HTTP API (NVIDIA NIM, any OpenAI-compatible) |
-| HuggingFace | `huggingface` | `huggingface_hub` InferenceClient (fallback: direct HTTP) |
-| FreeInference | `freeinference` | Free open-weight inference API |
+Sentinel uses **OpenAI-compatible APIs** for all LLM features. Any provider that exposes a `/chat/completions` endpoint works:
+
+| Provider | Base URL | Model |
+|----------|----------|-------|
+| NVIDIA NIM (free tier) | `https://integrate.api.nvidia.com/v1` | `meta/llama-3.3-70b-instruct` |
+| OpenAI | `https://api.openai.com/v1` | `gpt-4o` |
+| Any OpenAI-compatible | your endpoint | your model |
 
 ## License
 

@@ -99,7 +99,6 @@ jobs:
           sentinel scan evals/fixtures/terragoat --enrich --output enriched-terragoat.sarif
           sentinel fix evals/fixtures/terragoat --output fix-results.sarif
         env:
-          LLM_PROVIDER: openai
           OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: meta/llama-3.3-70b-instruct

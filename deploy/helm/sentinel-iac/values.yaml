@@ -62,7 +62,6 @@ postgresql:
 
 config:
   apiKey: ""
-  llmProvider: "openai"
   openaiApiKey: ""
   openaiBaseUrl: "https://integrate.api.nvidia.com/v1"
   openaiModel: "meta/llama-3.3-70b-instruct"
